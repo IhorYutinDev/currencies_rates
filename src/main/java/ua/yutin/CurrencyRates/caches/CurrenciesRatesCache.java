@@ -93,7 +93,7 @@ public class CurrenciesRatesCache {
                                     assetsCache.getRegisteredAssets().get(rate.getAssetId()),
                             Function.identity()));
 
-            updateRates();
+//            updateRates();
         } finally {
             writeLock.unlock();
         }

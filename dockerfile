@@ -1,26 +1,22 @@
-# Используем официальный образ с OpenJDK 17
-FROM openjdk:17-jdk
+# Use OpenJDK 17
+FROM openjdk:17-jdk-slim
 
-# Устанавливаем рабочую директорию внутри контейнера
+# Set working directory
 WORKDIR /app
 
-# Копируем JAR файл в контейнер
-COPY target/CurrencyRates-0.0.1-SNAPSHOT.jar /app/CurrencyRates-0.0.1-SNAPSHOT.jar
+# Copy the JAR file
+COPY target/CurrencyRates-0.0.1-SNAPSHOT.jar app.jar
 
-# Копируем файл конфигурации (если используется)
-COPY src/main/resources/application.properties /app/application.properties
+# Copy application properties
+COPY src/main/resources/application.properties application.properties
 
-# Проверяем содержимое директории, чтобы убедиться, что файлы скопированы
-RUN ls -l /app
+# Expose the application port
+EXPOSE 8094
 
-# Устанавливаем переменные окружения для конфигурации
+# Set environment variables
 ENV SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/currency_rates
 ENV SPRING_DATASOURCE_USERNAME=postgres
 ENV SPRING_DATASOURCE_PASSWORD=postgres
-ENV EXCHANGE_ACCESS_KEY=5118da45dc294616f98a369f913990f3
-ENV EXCHANGE_API_URL=http://data.fixer.io
-ENV EXCHANGE_BASE_CURRENCY=EUR
-ENV EXCHANGE_CRON_EXPRESSION="0 0 * ? * * *"
 
-# Указываем команду для запуска JAR файла
-ENTRYPOINT ["java", "-jar", "/app/CurrencyRates-0.0.1-SNAPSHOT.jar"]
+# Use the application.properties file
+ENTRYPOINT ["java", "-jar", "app.jar"]
