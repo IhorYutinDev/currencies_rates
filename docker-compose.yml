@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: currency_rates
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+
+  app:
+    build:
+      context: .
+    container_name: currency-rates-app
+    ports:
+      - "8094:8094"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/currency_rates
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      EXCHANGE_ACCESS_KEY: 5118da45dc294616f98a369f913990f3
+      EXCHANGE_API_URL: http://data.fixer.io
+      EXCHANGE_BASE_CURRENCY: EUR
+      EXCHANGE_CRON_EXPRESSION: "0 0 * ? * * *"
+    depends_on:
+      - db
+
+volumes:
+  db_data:
