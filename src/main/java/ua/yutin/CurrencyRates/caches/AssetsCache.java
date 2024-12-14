@@ -35,11 +35,15 @@ public class AssetsCache {
 
         writeLock.lock();
         try {
+            //supportedAssets = exchangeProvider.getSupportedCurrencies();
             registeredAssets = assetsRepository.findAll().stream().collect(Collectors.toMap(Asset::getId, Function.identity()));
-            supportedAssets = exchangeProvider.getSupportedCurrencies();
         } finally {
             writeLock.unlock();
         }
+    }
+
+    public void updateSupportedAssets() {
+        supportedAssets = exchangeProvider.getSupportedCurrencies();
     }
 
     public Set<String> getSupportedAssets() {
@@ -88,5 +92,4 @@ public class AssetsCache {
             writeLock.unlock();
         }
     }
-
 }

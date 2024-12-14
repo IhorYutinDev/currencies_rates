@@ -31,11 +31,15 @@ public class AssetsService {
 
 
     public Asset addAsset(Asset asset) {
+        if (assetsCache.getSupportedAssets().isEmpty()){
+            assetsCache.updateSupportedAssets();
+        }
+
         if (!assetsCache.getSupportedAssets().contains(asset.getName())) {
             throw new AssetNotCreatedException("Provided not supported asset with name: '" + asset.getName() + "'");
         }
 
-        if (assetsRepository.findByName(asset.getName()) != null) {
+        if (assetsCache.getAsset(asset.getName()) != null) {
             throw new AssetNotCreatedException("Asset with name: '" + asset.getName() + "' already exists");
         }
 
