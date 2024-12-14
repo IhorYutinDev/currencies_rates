@@ -1,4 +1,4 @@
-package ua.yutin.CurrencyRates.models;
+package ua.yutin.CurrencyRates.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -7,8 +7,7 @@ import ua.yutin.CurrencyRates.caches.AssetsCache;
 import ua.yutin.CurrencyRates.caches.CurrenciesRatesCache;
 import ua.yutin.CurrencyRates.exceptions.AssetNotCreatedException;
 import ua.yutin.CurrencyRates.models.Asset;
-import ua.yutin.CurrencyRates.models.AssetEntity;
-import ua.yutin.CurrencyRates.providers.IExchangeProvider;
+import ua.yutin.CurrencyRates.entities.AssetEntity;
 import ua.yutin.CurrencyRates.repositories.AssetsRepository;
 
 

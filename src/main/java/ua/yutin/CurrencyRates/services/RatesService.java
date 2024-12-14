@@ -10,11 +10,7 @@ import ua.yutin.CurrencyRates.caches.CurrenciesRatesCache;
 import ua.yutin.CurrencyRates.exceptions.RatesNotFoundException;
 import ua.yutin.CurrencyRates.models.Asset;
 import ua.yutin.CurrencyRates.models.Rate;
-import ua.yutin.CurrencyRates.models.RateEntity;
-import ua.yutin.CurrencyRates.providers.IExchangeProvider;
-import ua.yutin.CurrencyRates.repositories.RatesRepository;
-
-import java.util.Optional;
+import ua.yutin.CurrencyRates.entities.RateEntity;
 
 @Service
 public class RatesService {

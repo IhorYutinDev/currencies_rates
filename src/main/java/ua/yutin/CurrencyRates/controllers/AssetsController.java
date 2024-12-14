@@ -10,7 +10,7 @@ import ua.yutin.CurrencyRates.entities.ErrorResponse;
 import ua.yutin.CurrencyRates.exceptions.AssetNotCreatedException;
 import ua.yutin.CurrencyRates.models.Asset;
 
-import ua.yutin.CurrencyRates.models.AssetEntity;
+import ua.yutin.CurrencyRates.entities.AssetEntity;
 import ua.yutin.CurrencyRates.services.AssetsService;
 
 

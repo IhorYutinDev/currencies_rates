@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.yutin.CurrencyRates.entities.ErrorResponse;
 import ua.yutin.CurrencyRates.exceptions.RatesNotFoundException;
-import ua.yutin.CurrencyRates.models.RateEntity;
+import ua.yutin.CurrencyRates.entities.RateEntity;
 import ua.yutin.CurrencyRates.services.RatesService;
 
 @RestController
