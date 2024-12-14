@@ -61,7 +61,7 @@ public class CurrenciesRatesCache {
     }
 
     public void start() throws SchedulerException {
-        updateRates();
+      //  updateRates();
 
         createUpdateRatesJob();
     }
