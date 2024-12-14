@@ -25,6 +25,8 @@ public class FixerProviderImpl implements IExchangeProvider {
 
     private final RequestsSender requestsSender;
     private final AssetsRepository assetsRepository;
+    //move to properties?
+    private static final String GET_SUPPORTED_SYMBOLS_PATH = "/symbols?access_key=";
 
     @Autowired
     public FixerProviderImpl(RequestsSender requestsSender, AssetsRepository assetsRepository) {
@@ -35,7 +37,7 @@ public class FixerProviderImpl implements IExchangeProvider {
 
     @Override
     public Set<String> getSupportedCurrencies() {
-        String url = baseExchangeApiUrl + "/symbols?access_key=" + fixerAccessKey;
+        String url = baseExchangeApiUrl + GET_SUPPORTED_SYMBOLS_PATH + fixerAccessKey;
 
         CurrencyResponse response = requestsSender.getForObject(url, CurrencyResponse.class);
         if (response != null && response.isSuccess()) {
