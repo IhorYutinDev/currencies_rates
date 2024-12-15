@@ -2,8 +2,12 @@ package ua.yutin.CurrencyRates.caches;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import org.hibernate.validator.internal.util.stereotypes.ThreadSafe;
 import org.quartz.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ua.yutin.CurrencyRates.caches.jobs.UpdateRatesJob;
 import ua.yutin.CurrencyRates.models.Asset;
@@ -20,65 +24,27 @@ import static org.quartz.JobBuilder.newJob;
 
 @Component
 public class CurrenciesRatesCache {
+    private static final Logger logger = LoggerFactory.getLogger(CurrenciesRatesCache.class);
     private Map<Asset, Rate> currenciesRates;
     private final transient ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
 
     private final RatesRepository ratesRepository;
     private final IExchangeProvider exchangeProvider;
     private final AssetsCache assetsCache;
-    private final Scheduler scheduler;
-    private final CronExpression ratesUpdateExpression;
-    private JobKey jobKey;
 
 
     @Autowired
-    public CurrenciesRatesCache(RatesRepository ratesRepository, IExchangeProvider exchangeProvider, AssetsCache assetsCache,
-                                Scheduler scheduler, CronExpression ratesUpdateExpression) {
-
+    public CurrenciesRatesCache(RatesRepository ratesRepository, IExchangeProvider exchangeProvider, AssetsCache assetsCache) {
         this.ratesRepository = ratesRepository;
         this.exchangeProvider = exchangeProvider;
         this.assetsCache = assetsCache;
-        this.scheduler = scheduler;
-        this.ratesUpdateExpression = ratesUpdateExpression;
     }
+
 
     @PostConstruct
-    public void init() throws Exception {
+    public void init() {
         loadCache();
-
-        scheduler.start();
-
-        start();
-    }
-
-
-
-    @PreDestroy
-    private void stop() throws SchedulerException {
-        scheduler.deleteJob(jobKey);
-
-        scheduler.shutdown();
-    }
-
-    public void start() throws SchedulerException {
-      //  updateRates();
-
-        createUpdateRatesJob();
-    }
-
-    private void createUpdateRatesJob() throws SchedulerException {
-        JobDataMap dataMap = new JobDataMap();
-        dataMap.put("rates_updater", (Runnable) this::updateRates);
-        JobDetail jobDetail = newJob(UpdateRatesJob.class)
-                .withIdentity("update_rates_job")
-                .usingJobData(dataMap)
-                .build();
-
-        Trigger trigger = TriggerBuilder.newTrigger().withSchedule(CronScheduleBuilder.cronSchedule(ratesUpdateExpression)
-                .inTimeZone(TimeZone.getTimeZone("UTC"))).forJob(jobDetail).build();
-
-        jobKey = jobDetail.getKey();
-        scheduler.scheduleJob(jobDetail, trigger);
+        updateRates();
     }
 
 
@@ -95,6 +61,8 @@ public class CurrenciesRatesCache {
         }
     }
 
+
+    @Scheduled(cron = "${exchange.cron_expression}")
     public void updateRates() {
         ReentrantReadWriteLock.WriteLock writeLock = this.cacheLock.writeLock();
         writeLock.lock();
@@ -117,6 +85,7 @@ public class CurrenciesRatesCache {
                     currenciesRates.put(asset, addedRate);
                 }
             });
+            logger.info("Currencies rates successfully updated");
         } finally {
             writeLock.unlock();
         }

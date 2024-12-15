@@ -1,4 +1,4 @@
-package ua.yutin.CurrencyRates.entities;
+package ua.yutin.CurrencyRates.dtos;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class RateEntity {
+public class RateDTO {
     @JsonProperty("base-currency")
     private String baseCurrency;
 

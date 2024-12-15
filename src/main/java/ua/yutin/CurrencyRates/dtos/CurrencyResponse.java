@@ -1,7 +1,11 @@
-package ua.yutin.CurrencyRates.entities;
+package ua.yutin.CurrencyRates.dtos;
+
+import lombok.Data;
 
 import java.util.Map;
 
+
+@Data
 public class CurrencyResponse {
     private boolean success;
 

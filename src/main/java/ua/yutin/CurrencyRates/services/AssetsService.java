@@ -7,7 +7,6 @@ import ua.yutin.CurrencyRates.caches.AssetsCache;
 import ua.yutin.CurrencyRates.caches.CurrenciesRatesCache;
 import ua.yutin.CurrencyRates.exceptions.AssetNotCreatedException;
 import ua.yutin.CurrencyRates.models.Asset;
-import ua.yutin.CurrencyRates.entities.AssetEntity;
 import ua.yutin.CurrencyRates.repositories.AssetsRepository;
 
 
@@ -50,7 +49,7 @@ public class AssetsService {
     }
 
 
-    public List<AssetEntity> getAllAssets() {
-        return assetsCache.getRegisteredAssets().values().stream().map(asset -> new AssetEntity(asset.getName())).toList();
+    public List<Asset> getAllAssets() {
+        return assetsCache.getRegisteredAssets().values().stream().toList();
     }
 }

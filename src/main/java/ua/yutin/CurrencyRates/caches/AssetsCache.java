@@ -1,6 +1,10 @@
 package ua.yutin.CurrencyRates.caches;
 
 import jakarta.annotation.PostConstruct;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ua.yutin.CurrencyRates.models.Asset;
@@ -15,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class AssetsCache {
+    private static final Logger logger = LoggerFactory.getLogger(AssetsCache.class);
     private Set<String> supportedAssets = new HashSet<>();
     private Map<Integer, Asset> registeredAssets = new HashMap<>();
     private final transient ReentrantReadWriteLock assetsCacheLock = new ReentrantReadWriteLock();
@@ -30,12 +35,16 @@ public class AssetsCache {
     }
 
     @PostConstruct
+    public void init() {
+        reload();
+    }
+
     public void reload() {
         ReentrantReadWriteLock.WriteLock writeLock = this.assetsCacheLock.writeLock();
 
         writeLock.lock();
         try {
-            //supportedAssets = exchangeProvider.getSupportedCurrencies();
+            supportedAssets = exchangeProvider.getSupportedCurrencies();
             registeredAssets = assetsRepository.findAll().stream().collect(Collectors.toMap(Asset::getId, Function.identity()));
         } finally {
             writeLock.unlock();
@@ -44,6 +53,7 @@ public class AssetsCache {
 
     public void updateSupportedAssets() {
         supportedAssets = exchangeProvider.getSupportedCurrencies();
+        logger.debug("Successfully updated supported assets. Supported Currencies are: {}", supportedAssets);
     }
 
     public Set<String> getSupportedAssets() {
@@ -63,6 +73,17 @@ public class AssetsCache {
         readLock.lock();
         try {
             return registeredAssets.values().stream().filter(asset -> asset.getName().equals(name)).findFirst().orElse(null);
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    public Asset getAsset(int id) {
+        ReentrantReadWriteLock.ReadLock readLock = this.assetsCacheLock.readLock();
+
+        readLock.lock();
+        try {
+            return registeredAssets.values().stream().filter(asset -> asset.getId() == id).findFirst().orElse(null);
         } finally {
             readLock.unlock();
         }

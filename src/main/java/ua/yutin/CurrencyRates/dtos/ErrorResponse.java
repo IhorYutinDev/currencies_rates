@@ -1,4 +1,4 @@
-package ua.yutin.CurrencyRates.entities;
+package ua.yutin.CurrencyRates.dtos;
 
 
 import lombok.Data;

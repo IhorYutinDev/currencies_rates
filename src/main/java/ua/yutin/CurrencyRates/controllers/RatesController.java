@@ -7,19 +7,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ua.yutin.CurrencyRates.entities.ErrorResponse;
+import ua.yutin.CurrencyRates.dtos.ErrorResponse;
 import ua.yutin.CurrencyRates.exceptions.RatesNotFoundException;
-import ua.yutin.CurrencyRates.entities.RateEntity;
+import ua.yutin.CurrencyRates.dtos.RateDTO;
+
 import ua.yutin.CurrencyRates.services.RatesService;
+import ua.yutin.CurrencyRates.utils.RatesMapper;
 
 @RestController
 @RequestMapping("/rest/rates")
 public class RatesController {
     private final RatesService ratesService;
+    private final RatesMapper ratesMapper;
 
     @Autowired
-    public RatesController(RatesService ratesService) {
+    public RatesController(RatesService ratesService, RatesMapper ratesMapper) {
         this.ratesService = ratesService;
+        this.ratesMapper = ratesMapper;
     }
 
     @Operation(summary = "Get exchange rate for a specific currency",
@@ -27,9 +31,9 @@ public class RatesController {
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the exchange rate")
     @ApiResponse(responseCode = "400", description = "Invalid currency code")
     @ApiResponse(responseCode = "404", description = "Currency not found")
-    @GetMapping("/get/{currency}")
-    public ResponseEntity<RateEntity> addSensor(@PathVariable String currency) {
-        return ResponseEntity.status(HttpStatus.OK).body(ratesService.getRate(currency));
+    @GetMapping("/{currency}")
+    public ResponseEntity<RateDTO> get(@PathVariable String currency) {
+        return ResponseEntity.status(HttpStatus.OK).body(ratesMapper.mapToDTO(ratesService.getRate(currency)));
     }
 
 
