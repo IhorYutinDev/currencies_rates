@@ -1,6 +1,9 @@
 package ua.yutin.CurrencyRates.services;
 
 
+import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.yutin.CurrencyRates.caches.AssetsCache;
@@ -12,7 +15,7 @@ import ua.yutin.CurrencyRates.repositories.AssetsRepository;
 
 import java.util.List;
 
-
+@Log4j2
 @Service
 public class AssetsService {
     private final AssetsRepository assetsRepository;
@@ -34,10 +37,12 @@ public class AssetsService {
         }
 
         if (!assetsCache.getSupportedAssets().contains(asset.getName())) {
+            log.warn("Failed to add asset. Provided not supported currency: {}", asset.getName());
             throw new AssetNotCreatedException("Provided not supported asset with name: '" + asset.getName() + "'");
         }
 
         if (assetsCache.getAsset(asset.getName()) != null) {
+            log.warn("Failed to add asset. Provided already exists currency: {}", asset.getName());
             throw new AssetNotCreatedException("Asset with name: '" + asset.getName() + "' already exists");
         }
 
@@ -45,6 +50,7 @@ public class AssetsService {
         //update after adding - to get fresh rates
         currenciesRatesCache.updateRates();
 
+        log.info("Added asset: {}", addedAsset);
         return addedAsset;
     }
 

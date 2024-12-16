@@ -1,15 +1,10 @@
 package ua.yutin.CurrencyRates.caches;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import org.hibernate.validator.internal.util.stereotypes.ThreadSafe;
-import org.quartz.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import ua.yutin.CurrencyRates.caches.jobs.UpdateRatesJob;
 import ua.yutin.CurrencyRates.models.Asset;
 import ua.yutin.CurrencyRates.models.Rate;
 import ua.yutin.CurrencyRates.providers.IExchangeProvider;
@@ -20,11 +15,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.quartz.JobBuilder.newJob;
-
+@Log4j2
 @Component
 public class CurrenciesRatesCache {
-    private static final Logger logger = LoggerFactory.getLogger(CurrenciesRatesCache.class);
     private Map<Asset, Rate> currenciesRates;
     private final transient ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
 
@@ -52,10 +45,10 @@ public class CurrenciesRatesCache {
         ReentrantReadWriteLock.WriteLock writeLock = this.cacheLock.writeLock();
         writeLock.lock();
         try {
-            currenciesRates = ratesRepository.findAll().stream()
-                    .collect(Collectors.toMap(rate ->
-                                    assetsCache.getRegisteredAssets().get(rate.getAssetId()),
-                            Function.identity()));
+            currenciesRates = ratesRepository
+                    .findAll()
+                    .stream()
+                    .collect(Collectors.toMap(rate -> assetsCache.getRegisteredAssets().get(rate.getAssetId()), Function.identity()));
         } finally {
             writeLock.unlock();
         }
@@ -69,6 +62,7 @@ public class CurrenciesRatesCache {
         try {
             //update rates only for exists assets
             if (assetsCache.getRegisteredAssets().isEmpty()) {
+                log.debug("No registered currencies found. Updating has been rejected");
                 return;
             }
 
@@ -85,7 +79,7 @@ public class CurrenciesRatesCache {
                     currenciesRates.put(asset, addedRate);
                 }
             });
-            logger.info("Currencies rates successfully updated");
+            log.info("Currencies rates successfully updated");
         } finally {
             writeLock.unlock();
         }

@@ -29,16 +29,4 @@ public class Asset {
         this.id = id;
         this.name = name;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Asset asset = (Asset) o;
-        return Objects.equals(name, asset.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(name);
-    }
 }

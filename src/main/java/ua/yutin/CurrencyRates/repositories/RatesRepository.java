@@ -10,7 +10,4 @@ import java.util.Optional;
 
 @Repository
 public interface RatesRepository extends JpaRepository<Rate, Integer> {
-    Optional<Rate> findRateByAssetId(int assetId);
-
-    List<Rate> findAll();
 }

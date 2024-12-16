@@ -2,18 +2,22 @@ package ua.yutin.CurrencyRates.providers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+import ua.yutin.CurrencyRates.caches.AssetsCache;
 import ua.yutin.CurrencyRates.dtos.CurrencyRatesResponse;
 import ua.yutin.CurrencyRates.dtos.CurrencyResponse;
 import ua.yutin.CurrencyRates.models.Asset;
 import ua.yutin.CurrencyRates.repositories.AssetsRepository;
-import ua.yutin.CurrencyRates.utils.RequestsSender;
+
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 public class FixerProviderImpl implements IExchangeProvider {
+    private final AssetsCache assetsCache;
     @Value("${exchange.access_key}")
     private String fixerAccessKey;
 
@@ -23,15 +27,14 @@ public class FixerProviderImpl implements IExchangeProvider {
     @Value("${exchange.base_currency}")
     private String baseCurrency;
 
-    private final RequestsSender requestsSender;
-    private final AssetsRepository assetsRepository;
-    //move to properties?
+    private final RestTemplate restTemplate;
+
     private static final String GET_SUPPORTED_SYMBOLS_PATH = "/symbols?access_key=";
 
     @Autowired
-    public FixerProviderImpl(RequestsSender requestsSender, AssetsRepository assetsRepository) {
-        this.requestsSender = requestsSender;
-        this.assetsRepository = assetsRepository;
+    public FixerProviderImpl(RestTemplate restTemplate, @Lazy AssetsCache assetsCache) {
+        this.restTemplate = restTemplate;
+        this.assetsCache = assetsCache;
     }
 
 
@@ -39,7 +42,7 @@ public class FixerProviderImpl implements IExchangeProvider {
     public Set<String> getSupportedCurrencies() {
         String url = baseExchangeApiUrl + GET_SUPPORTED_SYMBOLS_PATH + fixerAccessKey;
 
-        CurrencyResponse response = requestsSender.getForObject(url, CurrencyResponse.class);
+        CurrencyResponse response = restTemplate.getForObject(url, CurrencyResponse.class);
         if (response != null && response.isSuccess()) {
             return response.getSymbols().keySet();
         }
@@ -51,7 +54,7 @@ public class FixerProviderImpl implements IExchangeProvider {
     public Map<Asset, Double> getExchangeRates(Set<Asset> assets) {
         String namesString = assets.stream().map(Asset::getName).collect(Collectors.joining(","));
 
-        CurrencyRatesResponse ratesResponse = requestsSender.getForObject(
+        CurrencyRatesResponse ratesResponse = restTemplate.getForObject(
                 baseExchangeApiUrl + "/api/latest?access_key=" +
                         fixerAccessKey + "&base=" + baseCurrency + "&symbols=" + namesString,
                 CurrencyRatesResponse.class);
@@ -64,7 +67,7 @@ public class FixerProviderImpl implements IExchangeProvider {
             return ratesResponse.getRates().entrySet()
                     .stream()
                     .map(entry -> {
-                        Asset asset = assetsRepository.findByName(entry.getKey());
+                        Asset asset = assetsCache.getAsset(entry.getKey());
                         return asset == null ? null : Map.entry(asset, entry.getValue());
                     })
                     .filter(Objects::nonNull)

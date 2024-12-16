@@ -2,12 +2,12 @@ package ua.yutin.CurrencyRates.models;
 
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Setter
-@Getter
+@Data
 @Table(name = "rates")
 public class Rate {
     @Id

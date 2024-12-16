@@ -6,5 +6,4 @@ import ua.yutin.CurrencyRates.models.Asset;
 
 @Repository
 public interface AssetsRepository extends JpaRepository<Asset, Integer> {
-    Asset findByName(String name);
 }

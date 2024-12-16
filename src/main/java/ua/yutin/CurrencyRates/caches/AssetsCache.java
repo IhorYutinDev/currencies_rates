@@ -16,10 +16,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-
+@Log4j2
 @Component
 public class AssetsCache {
-    private static final Logger logger = LoggerFactory.getLogger(AssetsCache.class);
     private Set<String> supportedAssets = new HashSet<>();
     private Map<Integer, Asset> registeredAssets = new HashMap<>();
     private final transient ReentrantReadWriteLock assetsCacheLock = new ReentrantReadWriteLock();
@@ -45,7 +44,10 @@ public class AssetsCache {
         writeLock.lock();
         try {
             supportedAssets = exchangeProvider.getSupportedCurrencies();
+            log.info("Successfully loaded {} supported assets", supportedAssets.size());
+
             registeredAssets = assetsRepository.findAll().stream().collect(Collectors.toMap(Asset::getId, Function.identity()));
+            log.info("Successfully loaded {} registered assets", registeredAssets.size());
         } finally {
             writeLock.unlock();
         }
@@ -53,7 +55,7 @@ public class AssetsCache {
 
     public void updateSupportedAssets() {
         supportedAssets = exchangeProvider.getSupportedCurrencies();
-        logger.debug("Successfully updated supported assets. Supported Currencies are: {}", supportedAssets);
+        log.info("Successfully updated supported assets. Supported Currencies are: {}", supportedAssets);
     }
 
     public Set<String> getSupportedAssets() {
