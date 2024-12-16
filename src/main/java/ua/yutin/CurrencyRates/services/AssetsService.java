@@ -2,15 +2,13 @@ package ua.yutin.CurrencyRates.services;
 
 
 import lombok.extern.log4j.Log4j2;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.yutin.CurrencyRates.caches.AssetsCache;
 import ua.yutin.CurrencyRates.caches.CurrenciesRatesCache;
 import ua.yutin.CurrencyRates.exceptions.AssetNotCreatedException;
 import ua.yutin.CurrencyRates.models.Asset;
-import ua.yutin.CurrencyRates.repositories.AssetsRepository;
+import ua.yutin.CurrencyRates.AssetsRepository;
 
 
 import java.util.List;

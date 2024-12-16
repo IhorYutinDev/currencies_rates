@@ -5,13 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ua.yutin.CurrencyRates.AssetsRepository;
-import ua.yutin.CurrencyRates.RatesRepository;
 import ua.yutin.CurrencyRates.models.Asset;
-import ua.yutin.CurrencyRates.models.Rate;
 
 import java.util.List;
 
@@ -21,9 +20,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @Testcontainers
 @DataJpaTest
-public class RatesRepositoryTest {
-    @Autowired
-    private RatesRepository ratesRepository;
+public class AssetsRepositoryTest {
     @Autowired
     private AssetsRepository assetsRepository;
 
@@ -41,37 +38,48 @@ public class RatesRepositoryTest {
 
     @Test
     public void findAllTest() {
-        List<Rate> rates = ratesRepository.findAll();
-        assertThat(rates).isNotNull();
-        assertThat(rates.size()).isEqualTo(1);
+        List<Asset> assets = assetsRepository.findAll();
+        assertThat(assets).isNotNull();
+        assertThat(assets.size()).isEqualTo(1);
     }
 
 
     @Test
-    public void findByAssetIdTest() {
-        Rate rate = ratesRepository.findById(1).orElse(null);
-        assert rate != null;
-        assertThat(rate.getId()).isEqualTo(1);
-        assertThat(rate.getValue()).isEqualTo(43.84);
-        assertThat(rate.getAssetId()).isEqualTo(1);
+    public void findByNameTest() {
+        Asset asset = assetsRepository.findById(1).orElse(null);
+        assert asset != null;
+        assertThat(asset.getId()).isEqualTo(1);
+        assertThat(asset.getName()).isEqualTo("UAH");
     }
 
 
     @Test
+    @Transactional
     public void saveTest() throws Exception {
-        Asset assetUSD = new Asset("USD");
-        assetsRepository.save(assetUSD);
-        int assetId = assetUSD.getId();
+        Asset asset = new Asset("USD");
+        assetsRepository.save(asset);
 
-        assertThat(assetId).isEqualTo(2);
+        Asset findAsset = assetsRepository.findById(asset.getId()).orElse(null);
 
-        Rate rate = new Rate(100.0, assetId);
-        ratesRepository.save(rate);
+        assertThat(findAsset).isNotNull();
+        assert findAsset != null;
+        assertThat(findAsset.getName()).isEqualTo("USD");
+        assertThat(findAsset.getId()).isEqualTo(2);
+    }
 
-        assertThat(rate.getAssetId()).isEqualTo(2);
-        assertThat(rate.getValue()).isEqualTo(100.0);
 
-        assertThatThrownBy(() -> ratesRepository.save(new Rate(100.0, assetId)))
+    @Test
+    public void checkConstraintSaveTest() throws Exception {
+        Asset asset = new Asset("USD");
+        assetsRepository.save(asset);
+
+        Asset findAsset = assetsRepository.findById(asset.getId()).orElse(null);
+
+        assertThat(findAsset).isNotNull();
+        assert findAsset != null;
+        assertThat(findAsset.getName()).isEqualTo("USD");
+
+        assertThatThrownBy(() -> assetsRepository.save(new Asset("USD")))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 }

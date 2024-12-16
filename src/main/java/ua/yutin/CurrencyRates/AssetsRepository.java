@@ -1,4 +1,4 @@
-package ua.yutin.CurrencyRates.repositories;
+package ua.yutin.CurrencyRates;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

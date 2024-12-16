@@ -9,10 +9,10 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class RateDTO {
-    @JsonProperty("base-currency")
+    @JsonProperty("base_currency")
     private String baseCurrency;
 
-    @JsonProperty("changed-currency")
+    @JsonProperty("changed_currency")
     private String changedCurrency;
 
     private double rate;

@@ -9,7 +9,6 @@ import ua.yutin.CurrencyRates.caches.AssetsCache;
 import ua.yutin.CurrencyRates.dtos.CurrencyRatesResponse;
 import ua.yutin.CurrencyRates.dtos.CurrencyResponse;
 import ua.yutin.CurrencyRates.models.Asset;
-import ua.yutin.CurrencyRates.repositories.AssetsRepository;
 
 
 import java.util.*;

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import ua.yutin.CurrencyRates.models.Asset;
 import ua.yutin.CurrencyRates.models.Rate;
 import ua.yutin.CurrencyRates.providers.IExchangeProvider;
-import ua.yutin.CurrencyRates.repositories.RatesRepository;
+import ua.yutin.CurrencyRates.RatesRepository;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
