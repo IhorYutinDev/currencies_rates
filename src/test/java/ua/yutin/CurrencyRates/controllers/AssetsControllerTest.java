@@ -56,11 +56,11 @@ public class AssetsControllerTest {
 
     @Test
     void addAssetTest() throws Exception {
-        when(assetsService.addAsset(asset)).thenReturn(asset); // Логика сервиса
+        when(assetsService.addAsset(asset)).thenReturn(asset);
 
         mockMvc.perform(post("/rest/assets")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto))) // Передача корректного JSON
+                        .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.currency").value("USD"));
     }
