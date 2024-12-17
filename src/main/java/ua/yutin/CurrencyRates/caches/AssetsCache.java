@@ -40,7 +40,7 @@ public class AssetsCache {
 
         writeLock.lock();
         try {
-            supportedAssets = exchangeProvider.getSupportedCurrencies();
+            //supportedAssets = exchangeProvider.getSupportedCurrencies();
             log.info("Successfully loaded {} supported assets", supportedAssets.size());
 
             registeredAssets = assetsRepository.findAll().stream().collect(Collectors.toMap(Asset::getId, Function.identity()));

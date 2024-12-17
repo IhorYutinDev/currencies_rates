@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:15
+    image: postgres:16.0
     container_name: postgres
     environment:
       POSTGRES_DB: currency_rates
@@ -14,33 +14,17 @@ services:
       - db_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
 
-#  debug:
-#    image: postgres:11.18-alpine
-#    container_name: debug
-#    environment:
-#      POSTGRES_DB: currency_rates
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: postgres
-#    ports:
-#      - "5433:5432"
-
-
   app:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: currency-rates-app
-
     ports:
       - "8080:8080"
-    environment:
-      - POSTGRES_URL=jdbc:postgresql://postgres:5432/currency_rates
-      - POSTGRES_USERNAME=postgres
-      - POSTGRES_PASSWORD=postgres
-      - EXCHANGE_ACCESS_KEY=5118da45dc294616f98a369f913990f3
-      - EXCHANGE_API_URL=http://data.fixer.io
+    env_file: .env
     depends_on:
       - postgres
 
 volumes:
   db_data:
+

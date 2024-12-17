@@ -1,11 +1,11 @@
 package ua.yutin.CurrencyRates.repositories;
 
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -24,9 +24,10 @@ public class AssetsRepositoryTest {
     @Autowired
     private AssetsRepository assetsRepository;
 
+
     @Container
     @ServiceConnection
-    static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16.0");
+    static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16.0");;
 
 
     @Test
@@ -46,23 +47,29 @@ public class AssetsRepositoryTest {
 
     @Test
     public void findByNameTest() {
+        // when
         Asset asset = assetsRepository.findById(1).orElse(null);
-        assert asset != null;
+
+        // then
+        assertThat(asset).isNotNull();
         assertThat(asset.getId()).isEqualTo(1);
         assertThat(asset.getName()).isEqualTo("UAH");
     }
 
 
     @Test
-    @Transactional
     public void saveTest() throws Exception {
+        // given
         Asset asset = new Asset("USD");
+
+        // when
         assetsRepository.save(asset);
 
+        // then
         Asset findAsset = assetsRepository.findById(asset.getId()).orElse(null);
 
         assertThat(findAsset).isNotNull();
-        assert findAsset != null;
+
         assertThat(findAsset.getName()).isEqualTo("USD");
         assertThat(findAsset.getId()).isEqualTo(2);
     }
@@ -76,7 +83,7 @@ public class AssetsRepositoryTest {
         Asset findAsset = assetsRepository.findById(asset.getId()).orElse(null);
 
         assertThat(findAsset).isNotNull();
-        assert findAsset != null;
+
         assertThat(findAsset.getName()).isEqualTo("USD");
 
         assertThatThrownBy(() -> assetsRepository.save(new Asset("USD")))

@@ -50,6 +50,7 @@ public class RatesRepositoryTest {
     @Test
     public void findByAssetIdTest() {
         Rate rate = ratesRepository.findById(1).orElse(null);
+        //
         assert rate != null;
         assertThat(rate.getId()).isEqualTo(1);
         assertThat(rate.getValue()).isEqualTo(43.84);
@@ -58,7 +59,7 @@ public class RatesRepositoryTest {
 
 
     @Test
-    public void saveTest() throws Exception {
+    public void saveTest() {
         Asset assetUSD = new Asset("USD");
         assetsRepository.save(assetUSD);
         int assetId = assetUSD.getId();
@@ -72,6 +73,12 @@ public class RatesRepositoryTest {
         assertThat(rate.getValue()).isEqualTo(100.0);
 
         assertThatThrownBy(() -> ratesRepository.save(new Rate(100.0, assetId)))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    public void checkConstraintSaveTest() throws Exception {
+        assertThatThrownBy(() -> ratesRepository.save(new Rate(100.0, 1)))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 }

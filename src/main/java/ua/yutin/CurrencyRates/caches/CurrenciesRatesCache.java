@@ -37,7 +37,7 @@ public class CurrenciesRatesCache {
     @PostConstruct
     public void init() {
         loadCache();
-        updateRates();
+       // updateRates();
     }
 
 

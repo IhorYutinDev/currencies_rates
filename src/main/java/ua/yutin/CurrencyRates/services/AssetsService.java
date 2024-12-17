@@ -4,6 +4,7 @@ package ua.yutin.CurrencyRates.services;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ua.yutin.CurrencyRates.caches.AssetsCache;
 import ua.yutin.CurrencyRates.caches.CurrenciesRatesCache;
 import ua.yutin.CurrencyRates.exceptions.AssetNotCreatedException;
@@ -28,9 +29,9 @@ public class AssetsService {
         this.currenciesRatesCache = currenciesRatesCache;
     }
 
-
+    @Transactional
     public Asset addAsset(Asset asset) {
-        if (assetsCache.getSupportedAssets().isEmpty()){
+        if (assetsCache.getSupportedAssets().isEmpty()) {
             assetsCache.updateSupportedAssets();
         }
 

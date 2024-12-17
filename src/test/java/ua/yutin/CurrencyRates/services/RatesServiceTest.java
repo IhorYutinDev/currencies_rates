@@ -32,7 +32,6 @@ public class RatesServiceTest {
 
     @Test
     void getRateTest() {
-
         Asset asset = new Asset("USD");
         asset.setId(4);
 
