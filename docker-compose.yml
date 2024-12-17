@@ -37,7 +37,7 @@ services:
       - POSTGRES_URL=jdbc:postgresql://postgres:5432/currency_rates
       - POSTGRES_USERNAME=postgres
       - POSTGRES_PASSWORD=postgres
-      - EXCHANGE_ACCESS_KEY=5118da45dc294616f98a369f913990f3
+      - EXCHANGE_ACCESS_KEY=4a05d2fa091f37e5cd4e70ef589ad8ae
       - EXCHANGE_API_URL=http://data.fixer.io
     depends_on:
       - postgres
