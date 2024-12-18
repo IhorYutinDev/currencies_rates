@@ -5,14 +5,17 @@ services:
     image: postgres:16.0
     container_name: postgres
     environment:
-      POSTGRES_DB: currency_rates
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
+    restart: always
+    networks:
+      - app_network
 
   app:
     build:
@@ -21,10 +24,21 @@ services:
     container_name: currency-rates-app
     ports:
       - "8080:8080"
-    env_file: .env
+    environment:
+      POSTGRES_URL: ${POSTGRES_URL}
+      POSTGRES_USERNAME: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      EXCHANGE_ACCESS_KEY: ${EXCHANGE_ACCESS_KEY}
+      EXCHANGE_API_URL: ${EXCHANGE_API_URL}
     depends_on:
       - postgres
+    restart: always
+    networks:
+      - app_network
 
 volumes:
   db_data:
 
+networks:
+  app_network:
+    driver: bridge
